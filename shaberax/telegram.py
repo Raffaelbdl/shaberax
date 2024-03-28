@@ -21,12 +21,11 @@ except ImportError:
 import yaml
 
 from shaberax.constants import TELEGRAM, ERROR
+from shaberax.logger import create_stream_logger
 
 
 def telegram_logging() -> logging.Logger:
     """Creates a Logger instance for Telegram."""
-
-    logger = logging.getLogger("TELEGRAM")
 
     class TelegramFormatter(logging.Formatter):
         debug_fmt = TELEGRAM + " - %(asctime)s : %(message)s"
@@ -36,7 +35,7 @@ def telegram_logging() -> logging.Logger:
         def __init__(self):
             super().__init__(fmt="%(message)s")
 
-        def format(self, record):
+        def format(self, record) -> str:
             original_fmt = self._style._fmt
             if record.levelno == logging.DEBUG:
                 self._style._fmt = TelegramFormatter.debug_fmt
@@ -50,13 +49,7 @@ def telegram_logging() -> logging.Logger:
 
             return result
 
-    handler = logging.StreamHandler()
-    handler.setFormatter(TelegramFormatter())
-
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
-
-    return logger
+    return create_stream_logger("TELEGRAM", TelegramFormatter())
 
 
 class TelegramLogger:
