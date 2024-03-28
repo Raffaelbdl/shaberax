@@ -1,5 +1,10 @@
-from colorama import Fore, Style
+from colorama import Fore, Style, Back
+from colorama.ansi import AnsiCodes
 
 
-ERROR = Fore.RED + "%(levelname)s" + Style.RESET_ALL
-TELEGRAM = Fore.BLUE + "TELEGRAM" + Style.RESET_ALL
+def color(text: str, ansi: AnsiCodes) -> str:
+    return ansi + text + Style.RESET_ALL
+
+
+ERROR = color("%(levelname)s", Back.RED)
+TELEGRAM = color("TELEGRAM", Fore.BLUE)
