@@ -7,35 +7,15 @@ from shaberax.logger import create_stream_logger
 
 
 def rl_logging() -> logging.Logger:
-    """Creates a Logger instance for Reinforcement Learning"""
-
-    class RLFormatter(logging.Formatter):
-        debug_fmt = "RL - " + DEBUG + " %(pathname)s:%(lineno)d => %(message)s"
-        info_fmt = "RL" + " - %(asctime)s : %(message)s"
-
-        def __init__(self):
-            super().__init__(fmt="%(message)s")
-
-        def format(self, record):
-            original_fmt = self._style._fmt
-            if record.levelno == logging.DEBUG:
-                self._style._fmt = RLFormatter.debug_fmt
-            elif record.levelno == logging.INFO:
-                self._style._fmt = RLFormatter.info_fmt
-
-            result = logging.Formatter.format(self, record)
-            self._style._fmt = original_fmt
-
-            return result
-
-    return create_stream_logger("RL", RLFormatter())
+    """Creates a Logger instance for Reinforcement Learning."""
+    return create_stream_logger(
+        "RL", logging.Formatter("RL" + " - %(asctime)s : %(message)s")
+    )
 
 
 class RLLogger:
     """Logging class for Reinforcement Learning.
 
-    For debugging purposes, directly use RLLogger.logger.debug(msg).
-    This allows redirection in VSCode console.
 
     Verbose specifies if information should be displayed:
         - 0: nothing is displayed
