@@ -29,7 +29,6 @@ def telegram_logging() -> logging.Logger:
 
     class TelegramFormatter(logging.Formatter):
         debug_fmt = TELEGRAM + " - %(asctime)s : %(message)s"
-        info_fmt = TELEGRAM + " - %(asctime)s : %(message)s"
         error_fmt = TELEGRAM + " - %(asctime)s / " + ERROR + " : %(message)s"
 
         def __init__(self):
@@ -39,8 +38,6 @@ def telegram_logging() -> logging.Logger:
             original_fmt = self._style._fmt
             if record.levelno == logging.DEBUG:
                 self._style._fmt = TelegramFormatter.debug_fmt
-            if record.levelno == logging.INFO:
-                self._style._fmt = TelegramFormatter.info_fmt
             elif record.levelno == logging.ERROR:
                 self._style._fmt = TelegramFormatter.error_fmt
 
@@ -64,8 +61,10 @@ class TelegramLogger:
 
     @staticmethod
     def setup(token: str, chat_id: int) -> None:
+        """Setups token and chat_id."""
+
         if token is None or chat_id is None:
-            print("token and chat_id must not be None Value.")
+            WarningLoggger.warn("token and chat_id must not be None.")
             return
 
         TelegramLogger._init = True
