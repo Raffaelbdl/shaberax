@@ -42,12 +42,21 @@ def general_logger() -> logging.Logger:
     return create_stream_logger("GENERAL", Formatter())
 
 
-class GeneralLogger:
-    """General Purpose Logger.
+# use a metaclass to bypass GeneralLogger in-method call
+# this allows to directly obtain the file from which the
+# call is done, and enables VSCode redirection
+class GeneralLoggerType(type):
+    def __getattr__(cls, attr):
+        if attr == "debug":
+            return cls.logger.debug
+        elif attr == "warning":
+            return cls.logger.warning
 
-    Directly access GeneralLogger.logger.
-    This allows redirection in VSCode console.
-    """
+        raise AttributeError(attr)
+
+
+class GeneralLogger(metaclass=GeneralLoggerType):
+    """General Purpose Logger."""
 
     logger: logging.Logger = general_logger()
 
