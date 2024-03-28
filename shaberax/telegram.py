@@ -21,7 +21,7 @@ except ImportError:
 import yaml
 
 from shaberax.constants import TELEGRAM, ERROR
-from shaberax.logger import create_stream_logger
+from shaberax.logger import create_stream_logger, WarningLoggger
 
 
 def telegram_logging() -> logging.Logger:
@@ -55,71 +55,86 @@ def telegram_logging() -> logging.Logger:
 class TelegramLogger:
     """Logging class for Telegram."""
 
-    def __init__(self, token: str, chat_id: int) -> None:
-        """Instantiates a Telegram Logger.
+    _init: bool = False
 
-        Args:
-            token: A token string, obtained when creating a bot with @BotFather.
-                See https://core.telegram.org/bots/features#botfather
-            chat_id: A private int of the chat between you and your bot.
-        """
-        self.logging = telegram_logging()
+    token: str = None
+    chat_id: int = None
 
-        self.token = token
-        self.chat_id = chat_id
+    logger: logging.Logger = telegram_logging()
 
-    def log_text(
-        self, text: str, *, parse_mode: ParseMode = ParseMode.MARKDOWN_V2
-    ) -> None:
+    @staticmethod
+    def setup(token: str, chat_id: int) -> None:
+        if token is None or chat_id is None:
+            print("token and chat_id must not be None Value.")
+            return
+
+        TelegramLogger._init = True
+        TelegramLogger.token = token
+        TelegramLogger.chat_id = chat_id
+
+    @staticmethod
+    def log_text(text: str, *, parse_mode: ParseMode = ParseMode.MARKDOWN_V2) -> None:
         """Sends text to Telegram.
 
         Args:
             text: The text to send as a string.
             parse_mode: An optional ParseMode.
         """
+        if not TelegramLogger._init:
+            WarningLoggger.warn("Telegram Logger not initialized.")
+            return
 
         async def _log():
-            bot = Bot(self.token)
+            bot = Bot(TelegramLogger.token)
             try:
                 async with bot:
                     response = await bot.send_message(
-                        chat_id=self.chat_id,
+                        chat_id=TelegramLogger.chat_id,
                         text=text,
                         parse_mode=parse_mode,
                     )
                     if response and response.message_id:
-                        self.logging.debug("Successfully sent log.")
+                        TelegramLogger.logger.debug("Successfully sent log.")
                     else:
                         raise TelegramError
             except TelegramError:
-                self.logging.error("Telegram `log_text` failed. Process will continue.")
+                TelegramLogger.logger.error(
+                    "Telegram `log_text` failed. Process will continue."
+                )
 
         asyncio.run(_log())
 
-    def log_image(self, image: str | BinaryIO) -> None:
+    @staticmethod
+    def log_image(image: str | BinaryIO) -> None:
         """Sends image to Telegram.
 
         Args:
             image: The path as string or the image as Binary.
         """
+        if not TelegramLogger._init:
+            WarningLoggger.warn("Telegram Logger not initialized.")
+            return
 
         async def _log():
-            bot = Bot(self.token)
+            bot = Bot(TelegramLogger.token)
             try:
                 async with bot:
-                    response = await bot.send_photo(chat_id=self.chat_id, photo=image)
+                    response = await bot.send_photo(
+                        chat_id=TelegramLogger.chat_id, photo=image
+                    )
                     if response and response.message_id:
-                        self.logging.debug("Successfully sent log.")
+                        TelegramLogger.logger.debug("Successfully sent log.")
                     else:
                         raise TelegramError
             except TelegramError:
-                self.logging.error(
+                TelegramLogger.logger.error(
                     "Telegram `log_image` failed. Process will continue."
                 )
 
         asyncio.run(_log())
 
-    def log_dictionary(self, dictionary: dict[str, Any]) -> None:
+    @staticmethod
+    def log_dictionary(dictionary: dict[str, Any]) -> None:
         """Sends dictionary to Telegram.
 
         This methods use yaml to format the dictionary.
@@ -129,4 +144,4 @@ class TelegramLogger:
             dictionary: The dictionary to send to Telegram.
         """
         msg = "```yaml\n" + yaml.dump(dictionary) + "\n```"
-        return self.log_text(msg, parse_mode=ParseMode.MARKDOWN_V2)
+        return TelegramLogger.log_text(msg, parse_mode=ParseMode.MARKDOWN_V2)
