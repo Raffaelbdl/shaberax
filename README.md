@@ -19,16 +19,14 @@ For single-functionality installations, please refer to the [**Overview**](#over
 ## Overview 
 ### General Logger
 The General Logger is an all-purpose logger. 
-> [!TIP]
-> Accessing directly GeneralLogger.logger enables VSCode redirection in the console.
 
 Example Usage:
 ```python
 from shaberax.logger import GeneralLogger
 
-GeneralLogger.logger.warning("Warning message")
+GeneralLogger.warning("Warning message")
 GeneralLogger.start_debug()
-GeneralLogger.logger.debug("Debug message")
+GeneralLogger.debug("Debug message")
 ```
 
 ### Telegram
