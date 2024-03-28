@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shaberax"
+requires-python = ">=3.10"
+description = "A logging library."
+authors = [{name = "Raffael Bolla Di Lorenzo"}]
+license = { text = "MIT License" }
+dynamic = ["version"]
+dependencies = ["colorama", "pyyaml"]
+
+[project.optional-dependencies]
+# Update dependencies in `all` if any are added or removed
+telegram = ["python-telegram-bot"]
+all = [
+    # telegram
+    "python-telegram-bot",
+]
+
+[project.urls]
+homepage = "https://github.com/Raffaelbdl/shaberax"
+
+[tool.setuptools.dynamic]
+version = {attr = "shaberax.version.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["shaberax*"]
