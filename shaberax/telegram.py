@@ -21,7 +21,7 @@ except ImportError:
 import yaml
 
 from shaberax.constants import TELEGRAM, ERROR
-from shaberax.logger import create_stream_logger
+from shaberax.logger import create_stream_logger, GeneralLogger
 
 
 def telegram_logging() -> logging.Logger:
@@ -64,7 +64,7 @@ class TelegramLogger:
         """Setups token and chat_id."""
 
         if token is None or chat_id is None:
-            WarningLoggger.warn("token and chat_id must not be None.")
+            GeneralLogger.warn("token and chat_id must not be None.")
             return
 
         TelegramLogger._init = True
@@ -80,7 +80,7 @@ class TelegramLogger:
             parse_mode: An optional ParseMode.
         """
         if not TelegramLogger._init:
-            WarningLoggger.warn("Telegram Logger not initialized.")
+            GeneralLogger.warn("Telegram Logger not initialized.")
             return
 
         async def _log():
@@ -111,7 +111,7 @@ class TelegramLogger:
             image: The path as string or the image as Binary.
         """
         if not TelegramLogger._init:
-            WarningLoggger.warn("Telegram Logger not initialized.")
+            GeneralLogger.warn("Telegram Logger not initialized.")
             return
 
         async def _log():
