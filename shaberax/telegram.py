@@ -21,7 +21,7 @@ except ImportError:
 import yaml
 
 from shaberax.constants import TELEGRAM, ERROR
-from shaberax.logger import create_stream_logger, WarningLoggger
+from shaberax.logger import create_stream_logger
 
 
 def telegram_logging() -> logging.Logger:
